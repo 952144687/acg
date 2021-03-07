@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acg.mapper.PostMapper">
+    <insert id="sendPost" parameterType="Post">
+        insert into post (u_id,tittle,content,type)
+        value (#{u_id},#{tittle},#{content},#{type})
+    </insert>
+    <select id="getPost" parameterType="Post" resultMap="PostWithUser">
+        select u.u_id,u.u_name,u.u_img,p.* from post p join user u
+        <where>
+            u.u_id = p.u_id
+            <if test="type !=null and type !=''">
+                and type = #{type}
+            </if>
+            <if test="tittle !=null and tittle !=''">
+                and tittle like concat(concat("%",#{tittle}),"%")
+            </if>
+        </where>
+        order by p.p_time desc 
+
+    </select>
+
+    <resultMap id="PostWithUser" type="Post">
+        <id column="p_id" property="p_id"></id>
+        <result column="u_id" property="u_id"></result>
+        <result column="p_time" property="p_time"></result>
+        <result column="tittle" property="tittle"></result>
+        <result column="content" property="content"></result>
+        <result column="type" property="type"></result>
+        <result column="collection" property="collection"></result>
+        <result column="is_show" property="is_show"></result>
+        <collection property="user" javaType="User">
+            <id property="u_id" column="u_id"></id>
+            <result property="u_name" column="u_name"></result>
+            <result property="u_img" column="u_img"></result>
+            <result property="u_introduction" column="u_introduction"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getWeekPost" resultMap="PostWithUser">
+        SELECT p.*,u.* FROM post p join  user u where p.u_id = u.u_id and   DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[<= ]]> p_time ORDER BY collection DESC LIMIT 0,10;
+    </select>
+
+
+    <select id="getPostById" parameterType="Post" resultMap="PostWithUser">
+            SELECT p.*,u.* FROM post p join  user u where p.u_id = u.u_id
+            and p_id = ${p_id}
+    </select>
+
+
+    <select id="getPostByUserId" parameterType="Post" resultMap="PostWithUser">
+           SELECT p.*,u.* FROM post p join  user u where p.u_id = u.u_id
+            and p.u_id = ${user.u_id} and  p.p_id != #{p_id} order by p.p_time  desc
+    </select>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acg.mapper.DisscussMapper">
+        <select id="selectByAnimeID" parameterType="int" resultMap="Disscuss">
+          select u.u_id,u.u_name,u.u_img,d.* from disscuss d join user u on d.u_id = u.u_id
+            where d.a_id = #{a_id}
+            order by d.d_id
+        </select>
+        <resultMap id="Disscuss" type="Disscuss">
+            <id property="d_id" column="d_id"></id>
+            <result property="a_id" column="a_id"></result>
+            <result property="u_id" column="u_id"></result>
+            <result property="d_content" column="d_content"></result>
+            <result property="d_createDate" column="d_createDate"></result>
+            <result property="d_to_d_id" column="d_to_d_id"></result>
+            <result property="d_number" column="d_number"></result>
+            <collection property="user" javaType="User">
+                <result property="u_id" column="u_id"></result>
+                <result property="u_name" column="u_name"></result>
+                <result property="u_img" column="u_img"></result>
+            </collection>
+        </resultMap>
+
+    <insert id="doSend" >
+        insert into disscuss (a_id,u_id,d_content)
+        value (#{param1},#{param2},#{param3})
+    </insert>
+
+    <insert id="doChidSend">
+         insert into disscuss (a_id,u_id,d_content,d_to_d_id,d_number)
+         value (#{param1},#{param2},#{param3},#{param4},#{param5})
+    </insert>
+
+    <select id="selectUserByDTDID" parameterType="int" resultMap="Disscuss">
+        select u.u_id,u.u_name,u.u_img from disscuss d join user u on d.u_id = u.u_id
+        where d.d_id = #{param}
+    </select>
+
+    <!-- 帖子 -->
+    <select id="selectByPostID" parameterType="int" resultMap="PostDisscuss">
+          select u.u_id,u.u_name,u.u_img,d.* from post_disscuss d join user u on d.u_id = u.u_id
+            where d.p_id = #{p_id}
+            order by d.d_id
+        </select>
+    <resultMap id="PostDisscuss" type="PostDisscuss">
+        <id property="d_id" column="d_id"></id>
+        <result property="p_id" column="p_id"></result>
+        <result property="u_id" column="u_id"></result>
+        <result property="d_content" column="d_content"></result>
+        <result property="d_createDate" column="d_createDate"></result>
+        <result property="d_to_d_id" column="d_to_d_id"></result>
+        <result property="d_number" column="d_number"></result>
+        <collection property="user" javaType="User">
+            <result property="u_id" column="u_id"></result>
+            <result property="u_name" column="u_name"></result>
+            <result property="u_img" column="u_img"></result>
+        </collection>
+    </resultMap>
+    <insert id="PostdoSend" >
+        insert into post_disscuss (p_id,u_id,d_content)
+        value (#{param1},#{param2},#{param3})
+    </insert>
+
+    <insert id="PostdoChidSend">
+         insert into post_disscuss (p_id,u_id,d_content,d_to_d_id,d_number)
+         value (#{param1},#{param2},#{param3},#{param4},#{param5})
+    </insert>
+
+
+</mapper>

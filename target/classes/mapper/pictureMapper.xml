@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acg.mapper.PictureMapper">
+
+    <insert id="sendPicture" >
+        insert into picture (pic_atlas_number,u_id,pic_number,pic_url,pic_tittle)
+        value (#{param1},#{param2},#{param3},#{param4},#{param5})
+    </insert>
+
+    <resultMap id="Picture" type="Picture">
+        <id property="pic_id" column="pic_id"></id>
+        <result property="pic_atlas_number" column="pic_atlas_number"></result>
+        <result property="u_id" column="u_id"></result>
+        <result property="pic_number" column="pic_number"></result>
+        <result property="pic_url" column="pic_url"></result>
+        <result property="pic_is_show" column="pic_is_show"></result>
+        <result property="pic_tittle" column="pic_tittle"></result>
+        <result property="pic_time" column="pic_time"></result>
+        <collection property="user" javaType="User">
+            <result property="u_id" column="u_id"></result>
+            <result property="u_name" column="u_name"></result>
+            <result property="u_img" column="u_img"></result>
+        </collection>
+    </resultMap>
+    
+    
+    <select id="getUserPic" parameterType="int" resultType="Picture">
+        select * from picture
+        where u_id = #{param} order  by pic_id asc
+    </select>
+    <delete id="deletePic" parameterType="String">
+       delete from picture
+		where pic_atlas_number in ${param}
+    </delete>
+    
+    <select id="getAllPic" resultMap="Picture">
+        select  p.*,u.* from picture p join user u where p.u_id = u.u_id
+    </select>
+
+</mapper>

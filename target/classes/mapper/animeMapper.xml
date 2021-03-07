@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acg.mapper.AnimeMapper">
+	<!--查询所有 -->
+	<select id="selectAllAnimes"  resultType="Anime" parameterType="int">
+		select * from anime
+	</select>
+	<!--添加 -->
+	<insert id="insertAnime" parameterType="Anime">
+		insert into anime (a_id,a_name,a_image,a_time,a_type,a_introduction,a_size)
+		value(#{a_id},#{a_name},#{a_image},#{a_time},#{a_type},#{a_introduction},#{a_size})
+	</insert>
+
+	<delete id="delectAnime" parameterType="String">
+		delete from anime
+		where a_id in ${animes}
+	</delete>
+
+	<select id="select" parameterType="String" resultType="Anime">
+		select * from anime
+		<where>
+			<if test="input != null and input != ''">
+				a_name like  #{input}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectAnimeById" parameterType="int" resultType="Anime">
+		select * from  anime
+		where a_id = #{a_id}
+	</select>
+	<!-- 修改-->
+	<update id="changeAnime" parameterType="Anime">
+		update  anime set
+		a_name = #{a_name},a_type = #{a_type},a_introduction = #{a_introduction},a_size = #{a_size},a_is_show = #{a_is_show}
+		where a_id = #{a_id}
+	</update>
+
+	<!--  ================  anime_item  =====================       -->
+	<select id="selectAnimeItem"   resultMap="AnimeItem">
+		select anime.a_name,anime_item.* from anime_item inner join anime on anime_item.a_id = anime.a_id order by anime_item.a_id,anime_item.a_number
+	</select>
+	<resultMap id="AnimeItem" type="AnimeItem">
+		<result property="a_id" column="a_id"></result>
+		<result property="a_number" column="a_number"></result>
+		<result property="a_address" column="a_address"></result>
+		<result property="a_change" column="a_change"></result>
+		<collection property="anime" javaType="Anime">
+			<result property="a_name" column="a_name"></result>
+		</collection>
+	</resultMap>
+
+	<insert id="addAnimeItem" parameterType="AnimeItem">
+		insert into anime_item	(a_id,a_number,a_address)
+		values (#{a_id},#{a_number},#{a_address})
+	</insert>
+
+	<delete id="delectAnimeItem" parameterType="int">
+		delete  from anime_item
+		where a_id = #{a_id} and a_number = #{a_number}
+	</delete>
+
+	<select id="searchAnimeItem" parameterType="String" resultMap="AnimeItem">
+		select anime.a_name,anime_item.* from anime_item inner join anime on anime_item.a_id = anime.a_id
+		where anime.a_name like #{input}
+		order by anime_item.a_id,anime_item.a_number;
+	</select>
+
+	<!-- 前台 -->
+	<select id="selectByType" parameterType="String" resultType="Anime">
+		select * from anime
+		where a_type = #{a_type}
+		order by a_time desc
+	</select>
+	<select id="searchAnime" parameterType="String" resultType="Anime">
+		select * from anime
+		where a_name like #{input}
+		order by a_time desc
+	</select>
+
+	<select id="maxAnimeNumber" parameterType="int" resultType="int">
+		select MAX(a_number) FROM anime_item WHERE a_id = #{a_id}
+	</select>
+	<select id="getAnimeItems" parameterType="int" resultType="AnimeItem">
+		select * from anime_item where a_id = #{a_id}
+		order by a_number
+	</select>
+</mapper>
